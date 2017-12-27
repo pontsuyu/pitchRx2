@@ -8,7 +8,7 @@ library(tidyverse)
 #' @export
 #'
 #' @examples
-get_gids <- function(start_year = 2015, end_year = 2017){
+get_gids <- function(start_year = 2016, end_year = 2017){
   if(start_year<2010||end_year>lubridate::year(Sys.Date()))
     stop("'years' must be between 2015 and 2017.")
 
