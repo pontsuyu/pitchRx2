@@ -14,9 +14,8 @@ atbat <- dbGetQuery(db$con, "SELECT * FROM atbat")
 notneed <- c("code", "event_num", "play_guid", "end_tfs_zulu",
              "event_num", "event_es", "play_guid", "event2_es")
 atbat <- atbat %>% select(-(29:33))
-sort(unique(pitch$pitcher_name))
 sort(unique(atbat$pitcher_name))
-dat <- inner_join(pitch, atbat) %>% filter(pitcher_name=="Adam Warren")
+dat <- inner_join(pitch, atbat) %>% filter(pitcher_name=="Masahiro Tanaka")
 x <- list(
   facet_grid(pitcher_name ~ stand, labeller = label_both),
   theme_bw(),
