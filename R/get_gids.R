@@ -11,7 +11,7 @@
 #' @examples
 get_gids <- function(start_year = 2016, end_year = 2017){
   if(start_year<2010||end_year>lubridate::year(Sys.Date()))
-    stop("'years' must be between 2015 and 2017.")
+    stop(paste0("'years' must be between 2010 and ", lubridate::year(Sys.Date())))
 
   date <- data.frame(date = seq(as.Date(paste0(start_year, "-01-01")), as.Date(paste0(end_year, "-12-31")), by = "day"), stringsAsFactors = F) %>%
           separate(date, c("year", "month", "day"), sep = "-")
