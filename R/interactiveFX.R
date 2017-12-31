@@ -74,7 +74,7 @@ interactiveFX <- function(data, spheres=TRUE, color="pitch_types", avg.by,
     rgl::axes3d(c('x', 'y', 'z'))
     rgl::title3d(xlab='Horizontal Axis', ylab='Distance from Home Plate', zlab='Height From Ground')
   } else {
-    rgl::plot3d(x=as.vector(snaps[,,1]), y=as.vector(snaps[,,2]), z=as.vector(snaps[,,3]),
+    stplot3d(x=as.vector(snaps[,,1]), y=as.vector(snaps[,,2]), z=as.vector(snaps[,,3]),
            xlab="Horizontal Axis", ylab="Distance from Home Plate", zlab="Height From Ground",
            col=as.character(full.pal), alpha=alpha, ...)
   }

@@ -18,9 +18,10 @@ sort(unique(atbat$pitcher_name))
 dat <- inner_join(pitch, atbat) %>% filter(pitcher_name=="Masahiro Tanaka")
 x <- list(
   facet_grid(pitcher_name ~ stand, labeller = label_both),
-  theme_bw(),
   coord_equal()
 )
+saveHTML({ animateFX(dat, layers = x,point.alpha = 0.6)}, interval = 0.1,
+         verbose = FALSE, ani.height = 600, ani.width = 800)
 interactiveFX(dat[dat$pitch_type=="FF"|dat$pitch_type=="SL"|dat$pitch_type=="FS",], spheres = F)
 strikeFX(dat, geom = "tile") +
   # facet_grid(pitcher_name ~ stand) +
