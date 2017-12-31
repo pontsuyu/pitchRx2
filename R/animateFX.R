@@ -59,7 +59,7 @@ animateFX <-
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
         for (i in idx) data[, i] <- as.numeric(data[, i])
         complete <- data[complete.cases(data[, idx]),]
-        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_types")
+        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_type")
         parameters <- complete[, idx]
         snapshots <- getSnapshots(parameters, interval)
         other <- complete[,!(colnames(complete) %in% idx)]
