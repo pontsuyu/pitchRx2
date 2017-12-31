@@ -6,9 +6,6 @@
 \usage{
 get_gids(start_year = 2016, end_year = 2017)
 }
-\arguments{
-\item{years}{}
-}
 \description{
 Title
 }
