@@ -35,7 +35,7 @@
 animateFX <-
     function(data, point.alpha = 1/3, layers, strikeFX = FALSE,
              xlim = c(-3.5, 3.5), ylim = c(0, 7), flag = FALSE, interval = 0.01, ...) {
-        top = bottom = right = left = NULL
+        y_max = y_min = right = left = NULL
         if (!"pitch_type" %in% colnames(data))
             stop("'data' does not have 'pitch_type' column.")
         #Add descriptions as pitch_types
@@ -86,7 +86,7 @@ animateFX <-
                        panel.grid.minor = element_line(colour = "grey92", size = 0.25),
                        strip.background = element_rect(fill = "grey85", colour = "grey20"),
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
-            p <- p + geom_rect(mapping = aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
+            p <- p + geom_rect(mapping = aes(ymax = y_max, ymin = y_min, xmax = right, xmin = left),
                                alpha = 0, fill = "pink", colour = "black") +
                 geom_point(mapping = aes_mapping, alpha = point.alpha)
             print(p + layers)
