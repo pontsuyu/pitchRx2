@@ -59,7 +59,7 @@ animateFX <-
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
         for (i in idx) data[, i] <- as.numeric(data[, i])
         complete <- data[complete.cases(data[, idx]),]
-        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_type")
+        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_types")
         parameters <- complete[, idx]
         snapshots <- getSnapshots(parameters, interval)
         other <- complete[,!(colnames(complete) %in% idx)]
@@ -80,13 +80,15 @@ animateFX <-
                  xlab("Horizontal Pitch Location") + ylab("Height from Ground") +
                  scale_alpha(guide = "none") + scale_size(guide = "none") +
                  theme(legend.position = "top",
+                       axis.text.x = element_text(size=15), axis.text.y = element_text(size=15),
+                       legend.title = element_text(size=15), legend.text = element_text(size=15),
                        panel.background = element_rect(fill = "white", colour = NA),
                        panel.border = element_rect(fill = NA, colour = "grey20"),
                        panel.grid.major = element_line(colour = "grey92"),
                        panel.grid.minor = element_line(colour = "grey92", size = 0.25),
                        strip.background = element_rect(fill = "grey85", colour = "grey20"),
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
-            p <- p + geom_rect(mapping = aes(ymax = y_max, ymin = y_min, xmax = right, xmin = left),
+            p <- p + geom_rect(mapping = aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
                                alpha = 0, fill = "pink", colour = "black") +
                 geom_point(mapping = aes_mapping, alpha = point.alpha)
             print(p + layers)
