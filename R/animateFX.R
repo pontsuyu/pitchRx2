@@ -34,7 +34,7 @@
 
 animateFX <-
     function(data, point.alpha = 1/3, layers, strikeFX = FALSE,
-             xlim = c(-3.5, 3.5), ylim = c(0, 7), flag = FALSE, interval = 0.01, ...) {
+             x_lim = c(-3.5, 3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01, ...) {
         y_max = y_min = right = left = NULL
         if (!"pitch_type" %in% colnames(data))
             stop("'data' does not have 'pitch_type' column.")
@@ -65,8 +65,8 @@ animateFX <-
         other <- complete[,!(colnames(complete) %in% idx)]
         boundaries <- getStrikezones(data, strikeFX = strikeFX) #Strikezone boundaries
         other <- inner_join(other, boundaries, by = "stand")
-        xrange <- xlim(xlim)
-        yrange <- ylim(ylim)
+        xrange <- xlim(x_lim)
+        yrange <- ylim(y_lim)
         N <- dim(snapshots)[2] #Number of plots in animation
         release <- max(as.numeric(parameters$y0))
         max.dist <- release - 1.417 #maximum distance a baseball can be from the pitcher (1.417 is start of home plate)
