@@ -5,7 +5,7 @@
 \title{Animate PITCHf/x}
 \usage{
 animateFX(data, point.alpha = 1/3, layers, strikeFX = FALSE,
-  xlim = c(-3.5, 3.5), ylim = c(0, 7), flag = FALSE, interval = 0.01,
+  x_lim = c(-3.5, 3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01,
   ...)
 }
 \arguments{
