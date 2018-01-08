@@ -19,7 +19,7 @@
 #' @param parent is the function being called from a higher-level function? (experimental)
 #' @param ... extra options passed onto geom commands
 #' @return Returns a series of objects of the class used by package ggplot2 to represent plots.
-#' @import plyr
+#' @import ggplot2
 #' @export
 #' @examples
 #' data(pitches)
@@ -81,7 +81,7 @@ animateFX <-
                        strip.background = element_rect(fill = "grey85", colour = "grey20"),
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
             p <- p + geom_rect(aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
-                               alpha = 0, fill = "pink", colour = "black") +
+                               alpha = 0, colour = "black") +
                 geom_point(mapping = aes_mapping, alpha = point.alpha)
             print(p + layers)
         }
