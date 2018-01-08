@@ -7,7 +7,6 @@
 #' @param strikeFX logical parameter indicating whether the function is called from strikeFX
 #' @references \url{http://www.baseballprospectus.com/article.php?articleid=14572}
 #' @import dplyr
-#' @export
 #' @return Returns a list of boundaries for both right handed batters and left handed batters
 #
 getStrikezones <- function(data, strikeFX = FALSE) {

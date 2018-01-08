@@ -3,7 +3,6 @@
 export(animateFX)
 export(export)
 export(getSnapshots)
-export(getStrikezones)
 export(get_gids)
 export(makeUrls)
 export(scrape)

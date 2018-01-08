@@ -79,7 +79,7 @@ animateFX <-
                        panel.grid.minor = element_line(colour = "grey92", size = 0.25),
                        strip.background = element_rect(fill = "grey85", colour = "grey20"),
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
-            p <- p + geom_rect(aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
+            p <- p + geom_rect(aes(ymax = Top, ymin = Bottom, xmax = Right, xmin = Left),
                                alpha = 0, colour = "black") +
                 geom_point(aes(x = "x", y = "z", colour = "pitch_type_name"), alpha = point.alpha)
             print(p + layers)
