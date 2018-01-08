@@ -39,15 +39,7 @@ animateFX <-
         if (!"pitch_type" %in% colnames(data))
             stop("'data' does not have 'pitch_type' column.")
         #Add descriptions as pitch_types
-        pitch_type <- c("SI", "FF", "IN", "SL", "CU", "CH", "FT",
-                        "FC", "PO", "KN", "FS", "FA",   NA, "FO")
-        pitch_types <- c("Sinker", "Fastball(four-seam)", "Intentional Walk",
-                         "Slider", "Curveball", "Changeup", "Fastball(two-seam)",
-                         "Fastball(cutter)", "Pitchout", "Knuckleball",
-                         "Fastball (split-finger)", "Fastball", "Unknown", "Forkball")
-        types <- data.frame(pitch_type, pitch_types, stringsAsFactors = F)
-        data <- dplyr::inner_join(data, types, by = "pitch_type") %>% as.data.frame
-
+        data <- dplyr::inner_join(data, pitchRx2::pitch_type, by = "pitch_type") %>% as.data.frame
         if (!"b_height" %in% names(data)) {
             warning("pitchRx assumes the height of each batter is recorded as 'b_height'.
                     Since there is no such column, we will assume each batter has a height of 6'2''")
@@ -59,7 +51,7 @@ animateFX <-
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
         for (i in idx) data[, i] <- as.numeric(data[, i])
         complete <- data[complete.cases(data[, idx]),]
-        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_types")
+        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_type_name")
         parameters <- complete[, idx]
         snapshots <- getSnapshots(parameters, interval)
         other <- complete[,!(colnames(complete) %in% idx)]
@@ -88,7 +80,7 @@ animateFX <-
                        panel.grid.minor = element_line(colour = "grey92", size = 0.25),
                        strip.background = element_rect(fill = "grey85", colour = "grey20"),
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
-            p <- p + geom_rect(mapping = aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
+            p <- p + geom_rect(aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
                                alpha = 0, fill = "pink", colour = "black") +
                 geom_point(mapping = aes_mapping, alpha = point.alpha)
             print(p + layers)
