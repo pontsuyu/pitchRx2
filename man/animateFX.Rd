@@ -4,9 +4,8 @@
 \alias{animateFX}
 \title{Animate PITCHf/x}
 \usage{
-animateFX(data, point.alpha = 1/3, layers, strikeFX = FALSE,
-  x_lim = c(-3.5, 3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01,
-  ...)
+animateFX(data, point.alpha = 1/3, layers, strike = FALSE, x_lim = c(-3.5,
+  3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01, ...)
 }
 \arguments{
 \item{data}{data frame with appropriately named PITCHf/x variables}
