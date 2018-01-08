@@ -51,7 +51,6 @@ animateFX <-
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
         for (i in idx) data[, i] <- as.numeric(data[, i])
         complete <- data[complete.cases(data[, idx]),]
-        aes_mapping <- aes_string(x = "x", y = "z", colour = "pitch_type_name")
         parameters <- complete[, idx]
         snapshots <- getSnapshots(parameters, interval)
         other <- complete[,!(colnames(complete) %in% idx)]
@@ -82,7 +81,7 @@ animateFX <-
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
             p <- p + geom_rect(aes(ymax = top, ymin = bottom, xmax = right, xmin = left),
                                alpha = 0, colour = "black") +
-                geom_point(mapping = aes_mapping, alpha = point.alpha)
+                geom_point(aes(x = "x", y = "z", colour = "pitch_type_name"), alpha = point.alpha)
             print(p + layers)
         }
     }
