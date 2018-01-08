@@ -81,7 +81,7 @@ animateFX <-
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
             p <- p + geom_rect(aes(ymax = Top, ymin = Bottom, xmax = Right, xmin = Left),
                                alpha = 0, colour = "black") +
-                geom_point(aes(x = "x", y = "z", colour = "pitch_type_name"), alpha = point.alpha)
+                geom_point(aes(x = x, y = z, colour = pitch_type_name), alpha = point.alpha)
             print(p + layers)
         }
     }
