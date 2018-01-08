@@ -1,13 +1,13 @@
-#' Calculate strikezone boundaries
-#'
-#' Strikezone boundaries calculated according to Mike Fast's specifications
-#'
-#' @param data PITCHf/x orginally entered into \code{animateFX}
-#' @param facets variables used for faceting (passed along from \code{layer})
-#' @param strikeFX logical parameter indicating whether the function is called from strikeFX
-#' @references \url{http://www.baseballprospectus.com/article.php?articleid=14572}
-#' @import dplyr
-#' @return Returns a list of boundaries for both right handed batters and left handed batters
+# Calculate strikezone boundaries
+#
+# Strikezone boundaries calculated according to Mike Fast's specifications
+#
+# @param data PITCHf/x orginally entered into \code{animateFX}
+# @param facets variables used for faceting (passed along from \code{layer})
+# @param strikeFX logical parameter indicating whether the function is called from strikeFX
+# @references \url{http://www.baseballprospectus.com/article.php?articleid=14572}
+# @import dplyr
+# @return Returns a list of boundaries for both right handed batters and left handed batters
 #
 getStrikezones <- function(data, strikeFX = FALSE) {
   h <- data %>% select(b_height) %>% tidyr::separate(b_height, c("x", "y"), sep = "-") %>% as.data.frame
