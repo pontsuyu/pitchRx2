@@ -71,7 +71,7 @@ animateFX <-
             p <- ggplot(data = frame) + xrange + yrange +
                  xlab("Horizontal Pitch Location") + ylab("Height from Ground") +
                  scale_alpha(guide = "none") + scale_size(guide = "none") +
-                 theme(legend.position = "top",
+                 theme(legend.position = "right",
                        axis.text.x = element_text(size=15), axis.text.y = element_text(size=15),
                        legend.title = element_text(size=15), legend.text = element_text(size=15),
                        panel.background = element_rect(fill = "white", colour = NA),
