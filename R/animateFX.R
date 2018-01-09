@@ -33,7 +33,7 @@
 #'
 
 animateFX <-
-    function(data, point.alpha = 1/3, layers, strike = FALSE,
+    function(data, point.alpha = 1/3, layers, strike = FALSE, color = "pitch_type_name",
              x_lim = c(-3.5, 3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01, ...) {
         y_max = y_min = right = left = NULL
         if (!"pitch_type" %in% colnames(data))
@@ -62,6 +62,7 @@ animateFX <-
         release <- max(as.numeric(parameters$y0))
         max.dist <- release - 1.417 #maximum distance a baseball can be from the pitcher (1.417 is start of home plate)
         swing <- NULL
+        aes_mapping <- aes_string(x = "x", y="z", colour = color)
         if(missing(layers)) layers <- NULL
         for (i in 1:(N-1)) {
             frame <- data.frame(snapshots[, i, ], other)
@@ -81,7 +82,7 @@ animateFX <-
                        legend.key = element_rect(fill = "white", colour = NA), complete = TRUE)
             p <- p + geom_rect(aes(ymax = Top, ymin = Bottom, xmax = Right, xmin = Left),
                                alpha = 0, colour = "black") +
-                geom_point(aes(x = x, y = z, colour = pitch_type_name), alpha = point.alpha)
+                geom_point(mapping = aes_mapping, alpha = point.alpha)
             print(p + layers)
         }
     }
