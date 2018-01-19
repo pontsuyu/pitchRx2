@@ -11,6 +11,5 @@ LazyData: true
 Depends: R
 Imports:
     tidyverse,
-    rvest,
-    ggplot2
+    rvest
 RoxygenNote: 6.0.1

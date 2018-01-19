@@ -4,21 +4,22 @@
 \alias{animateFX}
 \title{Animate PITCHf/x}
 \usage{
-animateFX(data, point.alpha = 1/3, layers, strike = FALSE, x_lim = c(-3.5,
-  3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01, ...)
+animateFX(data, point.alpha = 1/3, layers, strike = FALSE,
+  color = "pitch_type_name", x_lim = c(-3.5, 3.5), y_lim = c(0, 7),
+  flag = FALSE, interval = 0.01, ...)
 }
 \arguments{
 \item{data}{data frame with appropriately named PITCHf/x variables}
 
 \item{point.alpha}{ggplot2 alpha parameter}
 
+\item{color}{variable used to control coloring scheme.}
+
 \item{flag}{indicate whether or not batter has decided to swing.}
 
 \item{interval}{time (in seconds) between plotting the pitch locations.}
 
 \item{...}{extra options passed onto geom commands}
-
-\item{color}{variable used to control coloring scheme.}
 
 \item{avg.by}{variable used as an index for averaging over PITCHf/x parameters}
 
