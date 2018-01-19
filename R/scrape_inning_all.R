@@ -66,38 +66,38 @@
 #'
 #' }
 #'
-scrape_inning_all <- function(start, end, gid, db_name, ...) {
-    "inning/inning_all.xml"
+scrape_inning_all <- function(gid, db_name) {
     # make data-base file
     db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3")), silent = T)
-    if(class(db) == "try-error")
+    if(class(db)[1] == "try-error")
         db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
     # gid check
-    if (!all(gid %in% PitchRx2::game_ids))
+    if (!all(gid %in% pitchRx2::game_ids))
         stop("Any Game IDs supplied to the gids option should be of the form gid_YYYY_MM_DD_xxxmlb_zzzmlb_1")
-
-    # upload fields so we have table templates (for exporting to database)
-    # fields = NULL # happy BDR?
-    # env2 <- environment()
-    # data(fields, package="pitchRx2", envir=env2)
 
     # Now scrape the inning/inning_all.xml files
     inning.files <- paste0(makeUrls(gid), "/inning/inning_all.xml")
     n.files <- length(inning.files)
     #grab subset of files to be parsed
-    obs <- XML2R::XML2Obs(inning.files, as.equiv=TRUE, url.map=FALSE, quiet = T)
-    obs <- XML2R::re_name(obs, equiv=c("game//inning//top//atbat//pitch", "game//inning//bottom//atbat//pitch"), diff.name="inning_side", quiet=TRUE)
-    obs <- XML2R::re_name(obs, equiv=c("game//inning//top//atbat//runner", "game//inning//bottom//atbat//runner"), diff.name="inning_side", quiet=TRUE)
-    obs <- XML2R::re_name(obs, equiv=c("game//inning//top//atbat//po", "game//inning//bottom//atbat//po"), diff.name="inning_side", quiet=TRUE)
-    obs <- XML2R::re_name(obs, equiv=c("game//inning//top//atbat", "game//inning//bottom//atbat"), diff.name="inning_side", quiet=TRUE)
-    obs <- XML2R::re_name(obs, equiv=c("game//inning//top//action", "game//inning//bottom//action"), diff.name="inning_side", quiet=TRUE)
-    obs <- XML2R::add_key(obs, parent="game//inning", recycle="num", key.name="inning", quiet=TRUE)
-    obs <- XML2R::add_key(obs, parent="game//inning", recycle="next", key.name="next_", quiet=TRUE)
-    names(obs) <- sub("^game//inning//action$", "game//inning//atbat//action", names(obs))
-    obs <- XML2R::add_key(obs, parent="game//inning//atbat", recycle="num", quiet=TRUE)
+    docs <- foreach::foreach(i = seq_len(length(urls))) %do% {
+        text <- try(xml2::read_html(urls[i]), silent = T)
+        if(class(text)[1] != "try-error") XML::xmlParse(text, asText = TRUE)
+    }
+    nodes <- XML2R::docsToNodes(docs, "/")
+    l <- XML2R::nodesToList(nodes)
+    obs <- XML2R::listsToObs(l, urls = urls, url.map = FALSE)
+    obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//pitch", "html//body//game//inning//bottom//atbat//pitch"), diff.name="inning_side", quiet=TRUE)
+    obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//runner", "html//body//game//inning//bottom//atbat//runner"), diff.name="inning_side", quiet=TRUE)
+    obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//po", "html//body//game//inning//bottom//atbat//po"), diff.name="inning_side", quiet=TRUE)
+    obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat", "html//body//game//inning//bottom//atbat"), diff.name="inning_side", quiet=TRUE)
+    obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//action", "html//body//game//inning//bottom//action"), diff.name="inning_side", quiet=TRUE)
+    obs <- XML2R::add_key(obs, parent="html//body//game//inning", recycle="num", key.name="inning", quiet=TRUE)
+    obs <- XML2R::add_key(obs, parent="html//body//game//inning", recycle="next", key.name="next_", quiet=TRUE)
+    names(obs) <- sub("^html//body//game//inning//action$", "html//body//game//inning//atbat//action", names(obs))
+    obs <- XML2R::add_key(obs, parent="html//body//game//inning//atbat", recycle="num", quiet=TRUE)
     #no longer need the 'game' and 'game//inning' observations
     nms <- names(obs)
-    rm.idx <- c(grep("^game$", nms), grep("^game//inning$", nms))
+    rm.idx <- c(grep("^html//body//game$", nms), grep("^html//body//game//inning$", nms))
     if (length(rm.idx) > 0) obs <- obs[-rm.idx]
     tables <- collapse_obs2(obs)
     #Free up some memory
@@ -105,15 +105,14 @@ scrape_inning_all <- function(start, end, gid, db_name, ...) {
     gc();gc()
     #simplify table names
     tab.nms <- names(tables)
-    tab.nms <- sub("^game//inning//atbat$", "atbat", tab.nms)
-    tab.nms <- sub("^game//inning//atbat//action$", "action", tab.nms)
-    tab.nms <- sub("^game//inning//atbat//po$", "po", tab.nms)
-    tab.nms <- sub("^game//inning//atbat//runner$", "runner", tab.nms)
-    tab.nms <- sub("^game//inning//atbat//pitch$", "pitch", tab.nms)
+    tab.nms <- sub("^html//body//game//inning//atbat$", "atbat", tab.nms)
+    tab.nms <- sub("^html//body//game//inning//atbat//action$", "action", tab.nms)
+    tab.nms <- sub("^html//body//game//inning//atbat//po$", "po", tab.nms)
+    tab.nms <- sub("^html//body//game//inning//atbat//runner$", "runner", tab.nms)
+    tab.nms <- sub("^html//body//game//inning//atbat//pitch$", "pitch", tab.nms)
     tables <- setNames(tables, tab.nms)
     #Add names to atbat table for convenience
-    scrape.env <- environment() #avoids bringing data objects into global environment
-    data(players, package="pitchRx2", envir=scrape.env)
+    data(players, package="pitchRx2")
     players$id <- as.character(players$id)
     #Add batter name to 'atbat'
     colnames(tables[["atbat"]]) <- sub("^batter$", "id", colnames(tables[["atbat"]]))
@@ -122,7 +121,7 @@ scrape_inning_all <- function(start, end, gid, db_name, ...) {
     colnames(tables[["atbat"]]) <- sub("^full_name$", "batter_name", colnames(tables[["atbat"]]))
     #Add pitcher name to 'atbat'
     colnames(tables[["atbat"]]) <- sub("^pitcher$", "id", colnames(tables[["atbat"]]))
-    tables[["atbat"]] <- merged(x=tables[["atbat"]], y=players, by = "id", all.x = TRUE)
+    tables[["atbat"]] <- dplyr::left_join(as.data.frame(tables[["atbat"]], stringsAsFactors = FALSE), players, by = "id")
     colnames(tables[["atbat"]]) <- sub("^id$", "pitcher", colnames(tables[["atbat"]]))
     colnames(tables[["atbat"]]) <- sub("^full_name$", "pitcher_name", colnames(tables[["atbat"]]))
     colnames(tables[["atbat"]]) <- sub("^des", "atbat_des", colnames(tables[["atbat"]]))
@@ -133,7 +132,19 @@ scrape_inning_all <- function(start, end, gid, db_name, ...) {
     tables[["atbat"]] <- appendDate(tables[["atbat"]])
 
     #Try to write tables to database, if that fails, write to csv. Then clear up memory
-    for (i in names(tables)) export(connect, name = i, value = tables[[i]], template = fields[[i]])
+    for (i in names(tables)){
+        value <- tables[[i]]
+        # '.' in table names are not good!
+        names(value) <- sub("\\.", "_", names(value))
+        # if url.map=FALSE, have to change 'url_key' to url
+        names(value) <- sub("^url_key$", "url", names(value))
+        # url should never be NA -- this is specific to pitchRx implementation
+        if ("url" %in% colnames(value)) {
+            throw <- is.na(value$url)
+            if (any(throw)) value <- value[-throw,]
+        }
+        dplyr::copy_to(db, value, name = i, temporary = FALSE, overwrite = TRUE, append = TRUE)
+    }
 }
 
 #' Construct Gameday urls based on some parameters.
@@ -177,7 +188,7 @@ makeUrls <- function(x) {
 
 #wrapper around collapse_obs to ensure a list is always returned (if only table, return list of length 1)
 collapse_obs2 <- function(x) {
-    val <- collapse_obs(x)
+    val <- XML2R::collapse_obs(x)
     if (is.list(val)) {
         return(val)
     } else {
@@ -243,50 +254,11 @@ appendPitchCount <- function(dat) {
 # @param dat 'pitch' matrix/df
 # @return returns the original matrix/df with the proper pitch count column appended.
 appendDate <- function(dat) {
-    if (!"gameday_link" %in% colnames(dat)){
+    if (!("gameday_link" %in% colnames(dat))){
         warning("'date' column couldn't be created")
         return(dat)
     }
-    return(cbind(dat, date = substr(dat[,"gameday_link"], 5, 14)))
+    return(cbind(dat, date = substr(dat[, "gameday_link"], 5, 14)))
 }
 
-#' Export (append) a data.frame to a remote table in a database.
-#'
-#' This function is convenient if you plan on repeatedly appending to a table in a database.
-#' All that is required is a database connection and a data.frame you want to export to that database.
-#' If you want to initiate a table with more columns use the \code{template} argument.
-#' Note that if the table already exists, the \code{template} argument will be ignored.
-#'
-#' @param connect database connection.
-#' @param value local data frame.
-#' @param template a named character vector. The names of the vector should contain the names of \code{value}. The values of this vector should contain the relevant field types.
-#' @param name name of the remote table.
-#' @param ... arguments passed onto \code{DBI::dbWriteTable}
-#' @export
-#' @examples
-#' \dontrun{
-#' library(dplyr)
-#' my_db <- src_sqlite("DB.sqlite3")
-#' data(pitches, package="pitchRx")
-#' # Creates the 'pitches' table in the database
-#' export(connect=my_db$con, value=pitches, name="pitches")
-#' # Appends to the 'pitches' tables, but with the first column missing
-#' export(connect=my_db$con, value=pitches[,-1], name="pitches")
-#' tail(data.frame(collect(tbl(my_db, "pitches")))) #verify it appends correctly
-#' # This data frame has a column that doesn't exist in the pitches table --
-#' # so a new table is created.
-#' export(connect=my_db$con, value=cbind(pitches, test="works"), name="pitches")
-#' }
-export <- function(name, value, template, ...) {
-    # '.' in table names are not good!
-    names(value) <- sub("\\.", "_", names(value))
-    # if url.map=FALSE, have to change 'url_key' to url
-    names(value) <- sub("^url_key$", "url", names(value))
-    # url should never be NA -- this is specific to pitchRx implementation
-    if ("url" %in% names(value)) {
-        throw <- is.na(value$url)
-        if (any(throw)) value <- value[-throw,]
-    }
-    dplyr::copy_to(db, value, name = name, temporary = FALSE, overwrite = TRUE, append = TRUE)
-}
 
