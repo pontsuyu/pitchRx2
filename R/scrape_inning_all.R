@@ -22,13 +22,13 @@ scrape_inning_all <- function(gid, db_name) {
     inning.files <- paste0(makeUrls(gid), "/inning/inning_all.xml")
     n.files <- length(inning.files)
     #grab subset of files to be parsed
-    docs <- foreach::foreach(i = seq_len(length(urls))) %do% {
-        text <- try(xml2::read_html(urls[i]), silent = T)
+    docs <- foreach::foreach(i = seq_len(length(inning.files))) %do% {
+        text <- try(xml2::read_html(inning.files[i]), silent = T)
         if(class(text)[1] != "try-error") XML::xmlParse(text, asText = TRUE)
     }
     nodes <- XML2R::docsToNodes(docs, "/")
     l <- XML2R::nodesToList(nodes)
-    obs <- XML2R::listsToObs(l, urls = urls, url.map = FALSE)
+    obs <- XML2R::listsToObs(l, urls = inning.files, url.map = FALSE)
     obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//pitch", "html//body//game//inning//bottom//atbat//pitch"), diff.name="inning_side", quiet=TRUE)
     obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//runner", "html//body//game//inning//bottom//atbat//runner"), diff.name="inning_side", quiet=TRUE)
     obs <- XML2R::re_name(obs, equiv=c("html//body//game//inning//top//atbat//po", "html//body//game//inning//bottom//atbat//po"), diff.name="inning_side", quiet=TRUE)
