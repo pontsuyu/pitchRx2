@@ -1,80 +1,23 @@
 #' Scrape Major League Baseball's Gameday Data
 #'
-#' Function for obtaining PITCHf/x and other related Gameday Data. \code{scrape} currently has support for files ending with:
-#' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/inning/inning_all.xml}{inning/inning_all.xml},
-#' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/inning/inning_hit.xml}{inning/inning_hit.xml},
-#' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/players.xml}{players.xml}, or
-#' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/miniscoreboard.xml}{miniscoreboard.xml}.
-#' It's worth noting that PITCHf/x is contained in files ending with "inning/inning_all.xml", but the other files can complement this data depending on the goal for analysis.
-#' Any collection of file names may be passed to the \code{suffix} argument, and \code{scrape} will retrieve data from a (possibly large number)
-#' of files based on either a window of dates or a set of \code{game.ids}.
-#' If collecting data in bulk, it is strongly recommended that one establishes a database connection and supplies the
-#' connection to the \code{connect} argument. See the examples section for a simple example of how to do so.
+#' Function for obtaining PITCHf/x and other related Gameday Data. This function currently has support for files ending with:
+#' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/inning/inning_all.xml}{inning/inning_all.xml}
 #'
-#' @note This function was adapted from \code{scrapeFX} which is deprecated as of version 1.0
-#' @param start character string specifying a date "yyyy-mm-dd" to commence scraping.
-#' @param end character string specifying a date "yyyy-mm-dd" to terminate scraping.
-#' @param game.ids character vector of gameday_links. If this option is used, \code{start} and \code{end} are ignored.
-#' See \code{data(gids, package="pitchRx")} for examples.
-#' @param suffix character vector with suffix of the XML files to be parsed. Currently supported options are:
-#' 'players.xml', 'miniscoreboard.xml', 'inning/inning_all.xml', 'inning/inning_hit.xml'.
-#' @param connect A database connection object. The class of the object should be "MySQLConnection" or "SQLiteConnection".
-#' If a valid connection is supplied, tables will be copied to the database, which will result in better memory management.
-#' If a connection is supplied, but the connection fails for some reason, csv files will be written to the working directory.
-#' @param ... arguments passed onto \code{XML2R::XML2Obs}. Among other things, this can be used to switch on asynchronous downloads.
-#' @seealso If you want to add support for more file types, the \code{XML2R} package is a good place to start.
-#' @return Returns a list of data frames (or nothing if writing to a database).
+#' @param gid character vector of gameday_links.
+#' @param db_name sqlite3 file name.
+#' @return Nothing
 #' @export
-#' @import XML2R
 #' @examples
-#' \dontrun{
-#' # Collect PITCHf/x (and other data from inning_all.xml files) from
-#' # all games played on August 1st, 2013 (using asynchronous downloads)
-#' dat <- scrape(start = "2013-08-01", end = "2013-08-01")
-#' #As of XML2R 0.0.5, asyncronous downloads can be performed
-#' dat <- scrape(start = "2013-08-01", end = "2013-08-01", async = TRUE)
-#'
 #' # Scrape PITCHf/x from Minnesota Twins 2011 season
-#' data(gids, package = "pitchRx")
-#' twins11 <- gids[grepl("min", gids) & grepl("2011", gids)]
-#' dat <- scrape(game.ids = twins11[1]) #scrapes 1st game only
-#'
-#' data(nonMLBgids, package = "pitchRx")
-#' # Grab IDs for triple A games on June 1st, 2011
-#' # This post explains more about obtaining game IDs with regular expressions --
-#' # http://baseballwithr.wordpress.com/2014/06/30/pitchrx-meet-openwar-4/
-#' aaa <- nonMLBgids[grepl("2011_06_01_[a-z]{3}aaa_[a-z]{3}aaa", nonMLBgids)]
-#' dat <- scrape(game.ids = aaa)
-#'
-#' # Create SQLite database, then collect and store data in that database
-#' library(dplyr)
-#' my_db <- src_sqlite("Gameday.sqlite3")
-#' scrape(start = "2013-08-01", end = "2013-08-01", connect = my_db$con)
-#'
-#' # Collect other data complementary to PITCHf/x and store in database
-#' files <- c("inning/inning_hit.xml", "miniscoreboard.xml", "players.xml")
-#' scrape(start = "2013-08-01", end = "2013-08-01", connect=my_db$con, suffix = files)
-#'
-#' # Simple example to demonstrate database query using dplyr
-#' # Note that 'num' and 'gameday_link' together make a key that allows us to join these tables
-#' locations <- select(tbl(my_db, "pitch"), px, pz, des, num, gameday_link)
-#' names <- select(tbl(my_db, "atbat"), pitcher_name, batter_name, num, gameday_link)
-#' que <- inner_join(locations, filter(names, batter_name == "Paul Goldschmidt"),
-#'                    by = c("num", "gameday_link"))
-#' que$query #refine sql query if you'd like
-#' pitchfx <- collect(que) #submit query and bring data into R
-#'
-#' }
+#' data(game_ids, package = "pitchRx2")
+#' gid <- str_subset(game_ids, "^gid_2017_04_05_")
+#' scrape_inning_all(gid, "Gameday")
 #'
 scrape_inning_all <- function(gid, db_name) {
     # make data-base file
     db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3")), silent = T)
     if(class(db)[1] == "try-error")
         db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
-    # gid check
-    if (!all(gid %in% pitchRx2::game_ids))
-        stop("Any Game IDs supplied to the gids option should be of the form gid_YYYY_MM_DD_xxxmlb_zzzmlb_1")
-
     # Now scrape the inning/inning_all.xml files
     inning.files <- paste0(makeUrls(gid), "/inning/inning_all.xml")
     n.files <- length(inning.files)
@@ -147,31 +90,7 @@ scrape_inning_all <- function(gid, db_name) {
     }
 }
 
-#' Construct Gameday urls based on some parameters.
-#'
-#' This is a convenience function (used by \link{scrape}) which constructs urls with the common
-#' Gameday root \url{http://gd2.mlb.com/components/game/mlb/}.
-#'
-#' @param start date "yyyy-mm-dd" to commence scraping.
-#' @param end date "yyyy-mm-dd" to terminate scraping.
-#' @param gids The default value "infer" suggests gameday_links should be derived
-#' and appended appropriately (based on values of \code{start} and \code{end}).
-#' Otherwise, a character vector with gameday_links can be supplied.
-#' @return Returns a character vector.
-#' @export
-#' @examples
-#'
-#' # XML file names with pitch-by-pitch level data
-#' prefix <- makeUrls(start="2011-04-04", end="2011-04-04")
-#' paste0(prefix, "/inning/inning_all.xml")
-#' # XML file names with hit location data
-#' paste0(prefix, "/inning/inning_hit.xml")
-#' # XML file names with game-by-game level data
-#' paste0(makeUrls(start="2011-04-04", end="2011-04-04", gids=""), "/miniscoreboard.xml")
-#' # Use gids option instead
-#' data(gids)
-#' identical(prefix, makeUrls(gids=gids[grep("2011_04_04", gids)]))
-#'
+# Make Gameday urls
 makeUrls <- function(x) {
     root <- "http://gd2.mlb.com/components/game/"
     # Assume the league is 'mlb' unless we find evidence otherwise
@@ -180,13 +99,11 @@ makeUrls <- function(x) {
     # If 'mlb' does not appear in the gid, use the home team's league
     if (any(not.mlb)) league[not.mlb] <- substr(x[not.mlb], 26, 28)
     base <- paste0(root, league)
-    paste0(base,
-           "/year_", substr(x, 5, 8),
-           "/month_", substr(x, 10, 11),
+    paste0(base, "/year_", substr(x, 5, 8), "/month_", substr(x, 10, 11),
            "/day_", substr(x, 13, 14), "/", x)
 }
 
-#wrapper around collapse_obs to ensure a list is always returned (if only table, return list of length 1)
+# wrapper around collapse_obs to ensure a list is always returned (if only table, return list of length 1)
 collapse_obs2 <- function(x) {
     val <- XML2R::collapse_obs(x)
     if (is.list(val)) {
@@ -233,8 +150,6 @@ format.table <- function(dat, name) {
 
 
 # Add columns with relevant pitch count to the 'pitch' table.
-# @param dat 'pitch' matrix/df
-# @return returns the original matrix/df with the proper pitch count column appended.
 appendPitchCount <- function(dat) {
     if (any(!c("type", "gameday_link", "num") %in% colnames(dat))){
         warning("Count column couldn't be created")
@@ -251,8 +166,6 @@ appendPitchCount <- function(dat) {
 }
 
 # Add columns with relevant pitch count to the 'pitch' table.
-# @param dat 'pitch' matrix/df
-# @return returns the original matrix/df with the proper pitch count column appended.
 appendDate <- function(dat) {
     if (!("gameday_link" %in% colnames(dat))){
         warning("'date' column couldn't be created")
