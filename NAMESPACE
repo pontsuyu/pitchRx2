@@ -2,9 +2,11 @@
 
 export(animateFX)
 export(getSnapshots)
+export(getStrikezones)
 export(get_gids)
 export(scrape_inning_all)
 export(strikeFX)
+import(dplyr)
 import(ggplot2)
 import(hexbin)
 import(mgcv)
