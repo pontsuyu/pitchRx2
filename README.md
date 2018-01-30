@@ -3,7 +3,7 @@
 PitchRx2
 ========
 
-<img src="pitchRx2.png" align="right">
+<img src="pitchRx2.png" align="right" style="width: 200px">
 
 -   For a quick intro to `pitchRx`: visit the [web page](http://cpsievert.github.com/pitchRx/).
 -   For a more detailed overview, see the [RJournal article](http://journal.r-project.org/archive/accepted/sievert.pdf).

@@ -20,7 +20,7 @@ hexSticker::sticker(imgurl, package="pitchRx2", p_size=8, p_y = 1.45,
 ```
 
 # PitchRx2
-<img src="pitchRx2.png" align="right">
+<img src="pitchRx2.png" align="right" style="width: 200px">
 
 
 * For a quick intro to `pitchRx`: visit the [web page](http://cpsievert.github.com/pitchRx/).
