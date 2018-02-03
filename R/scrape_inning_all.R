@@ -8,21 +8,19 @@
 #' @return Nothing
 #' @export
 #' @examples
-#' # Scrape PITCHf/x from Minnesota Twins 2011 season
 #' data(game_ids, package = "pitchRx2")
 #' gid <- str_subset(game_ids, "^gid_2017_04_05_")
 #' scrape_inning_all(gid, "Gameday")
 #'
 scrape_inning_all <- function(gid, db_name) {
     # make data-base file
-    db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3")), silent = T)
-    if(class(db)[1] == "try-error")
-        db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
+    db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3")), create = F, silent = T)
+    if(class(db)[1] == "try-error") db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
     # Now scrape the inning/inning_all.xml files
     inning.files <- paste0(makeUrls(gid), "/inning/inning_all.xml")
     n.files <- length(inning.files)
-    #grab subset of files to be parsed
-    docs <- foreach::foreach(i = seq_len(length(inning.files))) %do% {
+    # grab subset of files to be parsed
+    docs <- foreach::foreach(i = seq_len(n.files)) %do% {
         text <- try(xml2::read_html(inning.files[i]), silent = T)
         if(class(text)[1] != "try-error") XML::xmlParse(text, asText = TRUE)
     }
@@ -38,15 +36,15 @@ scrape_inning_all <- function(gid, db_name) {
     obs <- XML2R::add_key(obs, parent="html//body//game//inning", recycle="next", key.name="next_", quiet=TRUE)
     names(obs) <- sub("^html//body//game//inning//action$", "html//body//game//inning//atbat//action", names(obs))
     obs <- XML2R::add_key(obs, parent="html//body//game//inning//atbat", recycle="num", quiet=TRUE)
-    #no longer need the 'game' and 'game//inning' observations
+    # no longer need the 'game' and 'game//inning' observations
     nms <- names(obs)
     rm.idx <- c(grep("^html//body//game$", nms), grep("^html//body//game//inning$", nms))
     if (length(rm.idx) > 0) obs <- obs[-rm.idx]
     tables <- collapse_obs2(obs)
-    #Free up some memory
+    # Free up some memory
     rm(obs)
     gc();gc()
-    #simplify table names
+    # simplify table names
     tab.nms <- names(tables)
     tab.nms <- sub("^html//body//game//inning//atbat$", "atbat", tab.nms)
     tab.nms <- sub("^html//body//game//inning//atbat//action$", "action", tab.nms)
@@ -54,15 +52,15 @@ scrape_inning_all <- function(gid, db_name) {
     tab.nms <- sub("^html//body//game//inning//atbat//runner$", "runner", tab.nms)
     tab.nms <- sub("^html//body//game//inning//atbat//pitch$", "pitch", tab.nms)
     tables <- setNames(tables, tab.nms)
-    #Add names to atbat table for convenience
+    # Add names to atbat table for convenience
     data(players, package="pitchRx2")
     players$id <- as.character(players$id)
-    #Add batter name to 'atbat'
+    # Add batter name to 'atbat'
     colnames(tables[["atbat"]]) <- sub("^batter$", "id", colnames(tables[["atbat"]]))
     tables[["atbat"]] <- dplyr::left_join(as.data.frame(tables[["atbat"]], stringsAsFactors = FALSE), players, by = "id")
     colnames(tables[["atbat"]]) <- sub("^id$", "batter", colnames(tables[["atbat"]]))
     colnames(tables[["atbat"]]) <- sub("^full_name$", "batter_name", colnames(tables[["atbat"]]))
-    #Add pitcher name to 'atbat'
+    # Add pitcher name to 'atbat'
     colnames(tables[["atbat"]]) <- sub("^pitcher$", "id", colnames(tables[["atbat"]]))
     tables[["atbat"]] <- dplyr::left_join(as.data.frame(tables[["atbat"]], stringsAsFactors = FALSE), players, by = "id")
     colnames(tables[["atbat"]]) <- sub("^id$", "pitcher", colnames(tables[["atbat"]]))
@@ -70,22 +68,16 @@ scrape_inning_all <- function(gid, db_name) {
     colnames(tables[["atbat"]]) <- sub("^des", "atbat_des", colnames(tables[["atbat"]]))
     # Coerce matrices to data frames; turn appropriate variables into numerics
     for (i in names(tables)) tables[[i]] <- format.table(tables[[i]], name=i)
-    #generate a "count" column from "b" (balls) & "s" (strikes)
+    # generate a "count" column from "b" (balls) & "s" (strikes)
     tables[["pitch"]] <- appendPitchCount(tables[["pitch"]])
     tables[["atbat"]] <- appendDate(tables[["atbat"]])
 
-    #Try to write tables to database, if that fails, write to csv. Then clear up memory
     for (i in names(tables)){
         value <- tables[[i]]
         # '.' in table names are not good!
         names(value) <- sub("\\.", "_", names(value))
-        # if url.map=FALSE, have to change 'url_key' to url
         names(value) <- sub("^url_key$", "url", names(value))
-        # url should never be NA -- this is specific to pitchRx implementation
-        if ("url" %in% colnames(value)) {
-            throw <- is.na(value$url)
-            if (any(throw)) value <- value[-throw,]
-        }
+        if ("url" %in% colnames(value)) value <- value[!is.na(value$url),]
         dplyr::copy_to(db, value, name = i, temporary = FALSE, overwrite = TRUE, append = TRUE)
     }
 }
@@ -93,26 +85,23 @@ scrape_inning_all <- function(gid, db_name) {
 # Make Gameday urls
 makeUrls <- function(x) {
     root <- "http://gd2.mlb.com/components/game/"
-    # Assume the league is 'mlb' unless we find evidence otherwise
     league <- rep("mlb", length(x))
     not.mlb <- !grepl("mlb", x)
     # If 'mlb' does not appear in the gid, use the home team's league
     if (any(not.mlb)) league[not.mlb] <- substr(x[not.mlb], 26, 28)
     base <- paste0(root, league)
-    paste0(base, "/year_", substr(x, 5, 8), "/month_", substr(x, 10, 11),
-           "/day_", substr(x, 13, 14), "/", x)
+    paste0(base, "/year_", substr(x, 5, 8),
+           "/month_", substr(x, 10, 11), "/day_", substr(x, 13, 14), "/", x)
 }
 
 # wrapper around collapse_obs to ensure a list is always returned (if only table, return list of length 1)
 collapse_obs2 <- function(x) {
     val <- XML2R::collapse_obs(x)
-    if (is.list(val)) {
-        return(val)
-    } else {
-        li <- list(val)
-        names(li) <- unique(names(x))
-        return(li)
+    if (!is.list(val)) {
+        val <- list(val)
+        names(val) <- unique(names(x))
     }
+    return(val)
 }
 
 # Take a matrix and turn into data frame and turn relevant columns into numerics
@@ -173,5 +162,3 @@ appendDate <- function(dat) {
     }
     return(cbind(dat, date = substr(dat[, "gameday_link"], 5, 14)))
 }
-
-

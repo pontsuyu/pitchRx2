@@ -2,10 +2,13 @@
 % Please edit documentation in R/get_gids.R
 \name{get_gids}
 \alias{get_gids}
-\title{Title}
+\title{Get game_ids in specified years}
 \usage{
 get_gids(start_year = 2016, end_year = 2017)
 }
+\value{
+game_id vector
+}
 \description{
-Title
+Get game_ids in specified years
 }

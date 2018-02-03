@@ -1,20 +1,27 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-PitchRx2
+pitchRx2
 ========
 
-<img src="pitchRx2_resize.png" align="right">
+<img src="pitchRx2_resize.png" align="right"> これは[pitchRxパッケージ](https://github.com/cpsievert/pitchRx)を基にして作成しています。
 
--   For a quick intro to `pitchRx`: visit the [web page](http://cpsievert.github.com/pitchRx/).
--   For a more detailed overview, see the [RJournal article](http://journal.r-project.org/archive/accepted/sievert.pdf).
-
-Installation
+インストール
 ------------
 
--   To install the latest [CRAN version](http://cran.r-project.org/web/packages/pitchRx/): `install.packages(pitchRx); library(pitchRx)`
--   To install the developmental version here on github use: `library(devtools); install_github("pitchRx", "cpsievert"); library(pitchRx)`
+`devtools::install_github("pontsuyu/pitchRx2")`
 
-Report an issue
----------------
+概要
+----
 
--   If you having issues using, installing, and/or have a question about pitchRx, please post a [new issue](https://github.com/cpsievert/pitchRx/issues?state=open)
+パッケージに含まれる関数は以下の通りです。
+
+-   `get_gids`<br> 指定した年のすべてのgame\_idを取得する
+-   `scrape_inning_all`<br> 投球、打席結果、ランナー状況、牽制、選手交代のデータをsqlite3に格納する
+-   `getSnapshots`<br> `scrape_inning_all`で得た投球結果から、リリースからホームベース通過までの軌道を計算し、3次元データとして返す
+-   `getStrikezones`<br> 打者の身長からストライクゾーンを計算する
+-   `animateFX`<br> `scrape_inning_all`で得た投球情報を`ggplot2`で可視化する。`animation::saveHTML`や`animation::saveGIF`と併用して使う
+
+紹介
+----
+
+この`pitchRx2`を使った集計を[コチラ](https://pontsuyu.github.io/tsuyulog/post/2018/01/31/pitchf/x%E3%81%8B%E3%82%89%E8%A6%8B%E3%81%9F%E7%94%B0%E4%B8%AD%E5%B0%86%E5%A4%A7%E6%8A%95%E6%89%8B%EF%BC%91/)に載せています。

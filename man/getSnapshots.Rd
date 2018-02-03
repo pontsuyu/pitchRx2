@@ -15,7 +15,7 @@ getSnapshots(data, interval = 0.01)
 Return a three dimensional array. The third dimension corresponds to different 'snapshots' of locations.
 }
 \description{
-This function generates the x, y and z locations used in \link{animateFX} and \link{interactiveFX}.
+This function generates the x, y and z locations used in \link{animateFX}.
 }
 \references{
 http://baseball.physics.illinois.edu/KaganPitchfx.pdf

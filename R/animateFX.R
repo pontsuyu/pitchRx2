@@ -9,16 +9,16 @@
 #' animation progresses.
 #'
 #' @param data data frame with appropriately named PITCHf/x variables
-#' @param color variable used to control coloring scheme.
-#' @param avg.by variable used as an index for averaging over PITCHf/x parameters
 #' @param point.alpha ggplot2 alpha parameter
-#' @param limitz limits for horizontal and vertical axes.
-#' @param flag indicate whether or not batter has decided to swing.
+#' @param layers list of ggplot2 layer modifications.
+#' @param color character. plot point color.
+#' @param x_lim vector(2 element). x axis range.
+#' @param y_lim vector(2 element). y axis range.
 #' @param interval time (in seconds) between plotting the pitch locations.
-#' @param layer list of ggplot2 layer modifications.
-#' @param parent is the function being called from a higher-level function? (experimental)
 #' @param ... extra options passed onto geom commands
+#'
 #' @return Returns a series of objects of the class used by package ggplot2 to represent plots.
+#' @import dplyr
 #' @import ggplot2
 #' @export
 #' @examples
@@ -26,9 +26,6 @@
 #' #generate animation and prompt default web browser to view the sequence of plots
 #' \dontrun{
 #' animation::saveHTML({ animateFX(pitches, layer = facet_grid(pitcher_name~stand)) })
-#' animation::saveHTML({ animateFX(pitches, avg.by="pitch_types",
-#'                          layer = facet_grid(pitcher_name~stand))
-#'                    })
 #' }
 #'
 
@@ -37,34 +34,34 @@ animateFX <-
              x_lim = c(-3.5, 3.5), y_lim = c(0, 7), flag = FALSE, interval = 0.01, ...) {
         y_max = y_min = right = left = NULL
         if (!"pitch_type" %in% colnames(data))
-            stop("'data' does not have 'pitch_type' column.")
-        #Add descriptions as pitch_types
-        data <- dplyr::inner_join(data, pitchRx2::pitch_type, by = "pitch_type") %>% as.data.frame
+            stop("'data' dont have 'pitch_type' column.")
+        # Add descriptions as pitch_types
+        data <- inner_join(data, pitchRx2::pitch_type, by = "pitch_type") %>% as.data.frame
         if (!"b_height" %in% names(data)) {
-            warning("pitchRx assumes the height of each batter is recorded as 'b_height'.
-                    Since there is no such column, we will assume each batter has a height of 6'2''")
+            warning("pitchRx2 assumes the height of each batter is recorded as 'b_height'.
+                    Since there is no such column, we will assume each batter has a height of 6-2")
             data$b_height <- "6-2"
         }
         idx <- c("x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az")
         if (!all(idx %in% names(data)))
-            stop("You must have the following variables in your dataset to animate pitch locations:
+            stop("'data' must have the following variables in your dataset to animate pitch locations:
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
+
         for (i in idx) data[, i] <- as.numeric(data[, i])
-        complete <- data[complete.cases(data[, idx]),]
-        parameters <- complete[, idx]
-        snapshots <- getSnapshots(parameters, interval)
-        other <- complete[,!(colnames(complete) %in% idx)]
+        complete <- data %>% filter(complete.cases(. %>% select(idx)))
+        snapshots <- getSnapshots(complete, interval)
+        other <- complete %>% select(-idx)
         boundaries <- getStrikezones(data, strikeFX = strike) #Strikezone boundaries
         other <- inner_join(other, boundaries, by = "stand")
         xrange <- xlim(x_lim)
         yrange <- ylim(y_lim)
-        N <- dim(snapshots)[2] #Number of plots in animation
-        release <- max(as.numeric(parameters$y0))
+        N <- dim(snapshots)[2] # Number of plots in animation
+        release <- max(as.numeric(complete$y0))
         max.dist <- release - 1.417 #maximum distance a baseball can be from the pitcher (1.417 is start of home plate)
         swing <- NULL
-        aes_mapping <- aes_string(x = "x", y="z", colour = color)
-        if(missing(layers)) layers <- NULL
-        for (i in 1:(N-1)) {
+        aes_mapping <- aes_string(x = "x", y = "z", colour = color)
+        if (missing(layers)) layers <- NULL
+        for (i in 1:N) {
             frame <- data.frame(snapshots[, i, ], other)
             colnames(frame) <- c("x", "y", "z", colnames(other))
             frame$scale_y <- abs(frame$y - release) / max.dist

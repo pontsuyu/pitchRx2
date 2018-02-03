@@ -19,7 +19,6 @@ Function for obtaining PITCHf/x and other related Gameday Data. This function cu
 \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/inning/inning_all.xml}{inning/inning_all.xml}
 }
 \examples{
-# Scrape PITCHf/x from Minnesota Twins 2011 season
 data(game_ids, package = "pitchRx2")
 gid <- str_subset(game_ids, "^gid_2017_04_05_")
 scrape_inning_all(gid, "Gameday")

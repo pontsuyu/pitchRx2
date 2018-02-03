@@ -13,21 +13,17 @@ animateFX(data, point.alpha = 1/3, layers, strike = FALSE,
 
 \item{point.alpha}{ggplot2 alpha parameter}
 
-\item{color}{variable used to control coloring scheme.}
+\item{layers}{list of ggplot2 layer modifications.}
 
-\item{flag}{indicate whether or not batter has decided to swing.}
+\item{color}{character. plot point color.}
+
+\item{x_lim}{vector(2 element). x axis range.}
+
+\item{y_lim}{vector(2 element). y axis range.}
 
 \item{interval}{time (in seconds) between plotting the pitch locations.}
 
 \item{...}{extra options passed onto geom commands}
-
-\item{avg.by}{variable used as an index for averaging over PITCHf/x parameters}
-
-\item{limitz}{limits for horizontal and vertical axes.}
-
-\item{layer}{list of ggplot2 layer modifications.}
-
-\item{parent}{is the function being called from a higher-level function? (experimental)}
 }
 \value{
 Returns a series of objects of the class used by package ggplot2 to represent plots.
@@ -47,9 +43,6 @@ data(pitches)
 #generate animation and prompt default web browser to view the sequence of plots
 \dontrun{
 animation::saveHTML({ animateFX(pitches, layer = facet_grid(pitcher_name~stand)) })
-animation::saveHTML({ animateFX(pitches, avg.by="pitch_types",
-                         layer = facet_grid(pitcher_name~stand))
-                   })
 }
 
 }
