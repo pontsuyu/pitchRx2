@@ -14,7 +14,7 @@
 #'
 scrape_inning_all <- function(gid, db_name) {
     # make data-base file
-    db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3")), create = F, silent = T)
+    db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = F, silent = T))
     if(class(db)[1] == "try-error") db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
     # Now scrape the inning/inning_all.xml files
     inning.files <- paste0(makeUrls(gid), "/inning/inning_all.xml")
