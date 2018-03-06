@@ -50,7 +50,7 @@ animateFX <-
         for (i in idx) data[, i] <- as.numeric(data[, i])
         complete <- data %>% filter(complete.cases(select(., idx)))
         snapshots <- getSnapshots(complete, interval)
-        other <- complete %>% select(-idx)
+        other <- complete %>% select(-which(colnames(.) %in% idx))
         boundaries <- getStrikezones(data, strikeFX = strike) #Strikezone boundaries
         other <- inner_join(other, boundaries, by = "stand")
         xrange <- xlim(x_lim)
