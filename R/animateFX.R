@@ -48,7 +48,7 @@ animateFX <-
                  'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
 
         for (i in idx) data[, i] <- as.numeric(data[, i])
-        complete <- data %>% filter(complete.cases(. %>% select(idx)))
+        complete <- data %>% filter(complete.cases(select(., idx)))
         snapshots <- getSnapshots(complete, interval)
         other <- complete %>% select(-idx)
         boundaries <- getStrikezones(data, strikeFX = strike) #Strikezone boundaries
