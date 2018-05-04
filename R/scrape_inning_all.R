@@ -21,7 +21,7 @@ scrape_inning_all <- function(gid, db_name) {
     n.files <- length(inning.files)
     # grab subset of files to be parsed
     docs <- foreach::foreach(i = seq_len(n.files)) %do% {
-        text <- try(suppressWarnings(xml2::read_html(inning.files[i])), silent = T)
+        text <- try(xml2::read_html(inning.files[i]), silent = T)
         if(class(text)[1] != "try-error") XML::xmlParse(text, asText = TRUE)
     }
     nodes <- XML2R::docsToNodes(docs, "/")
