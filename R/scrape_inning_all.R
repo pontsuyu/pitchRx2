@@ -21,9 +21,8 @@ scrape_inning_all <- function(gid, db_name) {
     n.files <- length(inning.files)
     # grab subset of files to be parsed
     docs <- foreach::foreach(i = seq_len(n.files)) %do% {
-        text <- try(xml2::read_html(inning.files[i]), silent = T)
+        text <- try(suppressWarnings(xml2::read_html(inning.files[i])), silent = T)
         if(class(text)[1] != "try-error") XML::xmlParse(text, asText = TRUE)
-        rm(text)
     }
     nodes <- XML2R::docsToNodes(docs, "/")
     l <- XML2R::nodesToList(nodes)
@@ -81,6 +80,7 @@ scrape_inning_all <- function(gid, db_name) {
         if ("url" %in% colnames(value)) value <- value[!is.na(value$url),]
         dplyr::copy_to(db, value, name = i, temporary = FALSE, overwrite = TRUE, append = TRUE)
     }
+    rm(players)
 }
 
 # Make Gameday urls
@@ -135,7 +135,6 @@ format.table <- function(dat, name) {
     } else { #create a 'gameday_link' column for easier linking of tables
         if (length(grep("^url$", names(dat)))) dat$gameday_link <- sub("/.*", "", sub(".*gid", "gid", dat$url))
     }
-    rm(players)
     return(dat)
 }
 
