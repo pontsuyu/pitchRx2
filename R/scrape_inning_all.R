@@ -54,7 +54,7 @@ scrape_inning_all <- function(gid, db_name) {
     tab.nms <- sub("^html//body//game//inning//atbat//pitch$", "pitch", tab.nms)
     tables <- setNames(tables, tab.nms)
     # Add names to atbat table for convenience
-    data(players, package="pitchRx2")
+    players <- pitchRx2::players
     players$id <- as.character(players$id)
     # Add batter name to 'atbat'
     colnames(tables[["atbat"]]) <- sub("^batter$", "id", colnames(tables[["atbat"]]))
