@@ -2,7 +2,7 @@ Package: pitchRx2
 Type: Package
 Title: Tools for Harnessing 'MLBAM' 'Gameday' Data and Visualizing 'pitchfx'
 Version: 0.0.1
-Authors@R: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
+Author: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
 Maintainer: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
 Description: With 'pitchRx2', one can easily obtain Major League Baseball Advanced
     Media's 'Gameday' data. The 'Gameday' website hosts a wealth of data in XML
