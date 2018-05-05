@@ -13,6 +13,7 @@
 #' scrape_inning_all(gid, "Gameday")
 #'
 scrape_inning_all <- function(gid, db_name) {
+    suppressWarnings({
     # make data-base file
     db <- try(dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = F), silent = T)
     if(class(db)[1] == "try-error") db <- dplyr::src_sqlite(paste0(db_name, ".sqlite3"), create = T)
@@ -81,6 +82,7 @@ scrape_inning_all <- function(gid, db_name) {
         dplyr::copy_to(db, value, name = i, temporary = FALSE, overwrite = TRUE, append = TRUE)
     }
     rm(players)
+    })
 }
 
 # Make Gameday urls
