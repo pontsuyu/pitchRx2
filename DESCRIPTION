@@ -1,22 +1,19 @@
 Package: pitchRx2
 Type: Package
-Title: Tools for Harnessing 'MLBAM' 'Gameday' Data and Visualizing 'pitchfx'
-Version: 0.0.1
+Title: Scraping and visualizing pitchfx data
+Version: 0.2.0
 Author: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
 Maintainer: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
-Description: With 'pitchRx2', one can easily obtain Major League Baseball Advanced
-    Media's 'Gameday' data. The 'Gameday' website hosts a wealth of data in XML
-    format, but perhaps most interesting is 'pitchfx'. Among other things, 
-    'pitchfx' data can be used to recreate a baseball's flight path from a pitcher's 
-    hand to home plate.
+Description: This package can easily obtain MLB pitchf/x data.
 License: MIT
 LazyData: true
 Encoding: UTF-8
-Depends: R (>= 3.4.3)
+Depends: R (>= 3.5.0)
 Imports:
-    tidyverse,
+    dplyr,
+    tidyr,
+    ggplot2,
     rvest,
     DBI,
     xml2,
     foreach
-RoxygenNote: 6.0.1
