@@ -9,9 +9,9 @@
 #'
 #' @importFrom xml2 read_html
 #' @importFrom XML xmlParse
+#' @import XML2R
 #' @import dplyr
 #' @import foreach
-#' @import XML2R
 #'
 #' @export
 #'
@@ -21,26 +21,21 @@
 #' scrape_players(gid, "Players")
 #'
 scrape_players <- function(gids, db_name) {
+    # make URLs
+    URLs <- paste0(makeUrls(gids), "/players.xml")
+
+    # scrape player's data
+    docs <- sapply(URLs, xmlParse)
+    tables <- docsToNodes(docs, "/") %>%
+        nodesToList() %>%
+        listsToObs(urls = URLs, url.map = FALSE) %>%
+        collapse_obs()
 
     fn <- paste0(db_name, ".sqlite3")
     if(file.exists(fn)) file.remove(fn)
     # make data-base file
     db <- src_sqlite(fn, create = T)
 
-    # make URLs
-    URLs <- paste0(makeUrls(gids), "/players.xml")
-
-    # scrape player's data
-    docs <- foreach(URL = URLs) %do% {
-        text <- try(read_html(URL), silent = T)
-        if(class(text)[1] != "try-error"){
-            xmlParse(text, asText = TRUE)
-        }
-    }
-    obs <- docsToNodes(docs, "/") %>%
-        nodesToList() %>%
-        listsToObs(urls = URLs, url.map = FALSE)
-    tables <- collapse_obs(obs)
     for(i in names(tables)){
         name <- unlist(strsplit(i, "//"))
         copy_to(db, as.data.frame(tables[[i]]),
@@ -49,13 +44,3 @@ scrape_players <- function(gids, db_name) {
                 overwrite = TRUE)
     }
 }
-
-# wrapper around collapse_obs to ensure a list is always returned
-# collapse_obs2 <- function(x) {
-#     val <- XML2R::collapse_obs(x)
-#     if (!is.list(val)) {
-#         val <- list(val)
-#         names(val) <- unique(names(x))
-#     }
-#     return(val)
-# }

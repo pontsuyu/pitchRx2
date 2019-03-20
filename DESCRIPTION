@@ -12,8 +12,11 @@ Depends: R (>= 3.5.0)
 Imports:
     dplyr,
     tidyr,
+    purrr,
+    lubridate,
     ggplot2,
     rvest,
     DBI,
     xml2,
     foreach
+RoxygenNote: 6.1.1
