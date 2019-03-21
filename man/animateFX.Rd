@@ -4,26 +4,28 @@
 \alias{animateFX}
 \title{Animate PITCHf/x}
 \usage{
-animateFX(data, point.alpha = 1/3, layers, strike = FALSE,
-  color = "pitch_type_name", x_lim = c(-3.5, 3.5), y_lim = c(0, 7),
-  flag = FALSE, interval = 0.01, ...)
+animateFX(data, interval = 0.01, layers = facet_grid(~stand),
+  color = "pitch_type", point.alpha = 1/3, x_lim = c(-3.5, 3.5),
+  y_lim = c(0, 7), movie.name = "animation.gif", ...)
 }
 \arguments{
 \item{data}{data frame with appropriately named PITCHf/x variables}
 
-\item{point.alpha}{ggplot2 alpha parameter}
+\item{interval}{time (in seconds) between plotting the pitch locations.}
 
 \item{layers}{list of ggplot2 layer modifications.}
 
 \item{color}{character. plot point color.}
 
+\item{point.alpha}{ggplot2 alpha parameter}
+
 \item{x_lim}{vector(2 element). x axis range.}
 
 \item{y_lim}{vector(2 element). y axis range.}
 
-\item{interval}{time (in seconds) between plotting the pitch locations.}
+\item{movie.name}{gif image name}
 
-\item{...}{extra options passed onto geom commands}
+\item{...}{using in saveGIF}
 }
 \value{
 Returns a series of objects of the class used by package ggplot2 to represent plots.
@@ -39,10 +41,8 @@ to the viewer with time. This is relected with the increase in size of the "ball
 animation progresses.
 }
 \examples{
-data(pitches)
-#generate animation and prompt default web browser to view the sequence of plots
 \dontrun{
-animation::saveHTML({ animateFX(pitches, layer = facet_grid(pitcher_name~stand)) })
+  animateFX(pitches, interval = 1.0, ani.height = 600, ani.width = 1200)
 }
 
 }

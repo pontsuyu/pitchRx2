@@ -4,43 +4,42 @@
 #' \href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/players.xml}{players.xml}
 #'
 #' @param gids Gameday URLs vector.
-#' @param db_name sqlite3 file name which you wanna make.
-#' @return Nothing
+#' @return list
 #'
 #' @importFrom xml2 read_html
 #' @importFrom XML xmlParse
 #' @import XML2R
 #' @import dplyr
-#' @import foreach
 #'
 #' @export
 #'
 #' @examples
 #' data(game_ids, package = "pitchRx2")
 #' gid <- str_subset(game_ids, "^gid_2017_04_05_")
-#' scrape_players(gid, "Players")
+#' scrape_players(gid)
 #'
-scrape_players <- function(gids, db_name) {
+scrape_players <- function(gids) {
     # make URLs
     URLs <- paste0(makeUrls(gids), "/players.xml")
 
     # scrape player's data
-    docs <- sapply(URLs, xmlParse)
+    Sys.time()
+    docs <- sapply(URLs, function(URL){
+        text <- try(read_html(URL), silent = T)
+        if(class(text)[1] != "try-error"){
+            xmlParse(text, asText = TRUE)
+        }
+    })
     tables <- docsToNodes(docs, "/") %>%
         nodesToList() %>%
         listsToObs(urls = URLs, url.map = FALSE) %>%
         collapse_obs()
 
-    fn <- paste0(db_name, ".sqlite3")
-    if(file.exists(fn)) file.remove(fn)
-    # make data-base file
-    db <- src_sqlite(fn, create = T)
-
-    for(i in names(tables)){
-        name <- unlist(strsplit(i, "//"))
-        copy_to(db, as.data.frame(tables[[i]]),
-                name = name[length(name)],
-                temporary = FALSE,
-                overwrite = TRUE)
+    tbl_name <- names(tables)
+    for(i in 1:length(tbl_name)){
+        name <- unlist(strsplit(tbl_name[i], "//"))
+        tables[[i]] <- as.data.frame(tables[[i]], stringsAsFactors = F)
+        names(tables)[i] <- name[length(name)]
     }
+    return(tables)
 }

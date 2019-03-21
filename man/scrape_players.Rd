@@ -4,15 +4,13 @@
 \alias{scrape_players}
 \title{Scrape MLB Players Data}
 \usage{
-scrape_players(gids, db_name)
+scrape_players(gids)
 }
 \arguments{
 \item{gids}{Gameday URLs vector.}
-
-\item{db_name}{sqlite3 file name which you wanna make.}
 }
 \value{
-Nothing
+list
 }
 \description{
 Function for obtaining MLB Players Data.
@@ -21,6 +19,6 @@ Function for obtaining MLB Players Data.
 \examples{
 data(game_ids, package = "pitchRx2")
 gid <- str_subset(game_ids, "^gid_2017_04_05_")
-scrape_players(gid, "Players")
+scrape_players(gid)
 
 }

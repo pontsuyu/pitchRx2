@@ -18,5 +18,5 @@ Imports:
     rvest,
     DBI,
     xml2,
-    foreach
+    animation
 RoxygenNote: 6.1.1
