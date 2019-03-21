@@ -4,7 +4,8 @@
 # pitchRx2
 
 <img src="pitchRx2_resize.png" align="right">
-これは[pitchRxパッケージ](https://github.com/cpsievert/pitchRx)を基にして作成しています。
+
+これは [pitchRxパッケージ](https://github.com/cpsievert/pitchRx) を基にして作成しています。
 
 ## インストール
 
@@ -26,4 +27,4 @@
 
 #### ※古いpitchRx2パッケージでの例です。近日更新予定。
 
-この`pitchRx2`を使った集計を[コチラ](https://pontsuyu.github.io/tsuyulog/post/2018/02/03/pitchf/x%E3%81%8B%E3%82%89%E8%A6%8B%E3%81%9F%E7%94%B0%E4%B8%AD%E5%B0%86%E5%A4%A7%E6%8A%95%E6%89%8B%EF%BC%91/)に載せています。
+この`pitchRx2`を使った集計を [コチラ](https://pontsuyu.github.io/tsuyulog/post/2018/02/03/pitchf/x%E3%81%8B%E3%82%89%E8%A6%8B%E3%81%9F%E7%94%B0%E4%B8%AD%E5%B0%86%E5%A4%A7%E6%8A%95%E6%89%8B%EF%BC%91/) に載せています。
