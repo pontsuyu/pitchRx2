@@ -10,6 +10,7 @@
 #' @importFrom xml2 read_html
 #' @importFrom XML xmlParse
 #' @importFrom stringr str_detect
+#' @importFrom purrr map
 #' @import XML2R
 #' @import dplyr
 #'
@@ -20,9 +21,8 @@
 #' scrape_inning_all(gid, "Gameday")
 #'
 scrape_inning_all <- function(gids, db_name = "database") {
-    # Now scrape the inning/inning_all.xml files
     URLs <- paste0(makeUrls(gids), "/inning/inning_all.xml")
-    docs <- sapply(URLs, function(URL){
+    docs <- map(URLs, function(URL){
         text <- try(read_html(URL), silent = T)
         if(class(text)[1] != "try-error"){
             xmlParse(text, asText = TRUE)
@@ -32,12 +32,24 @@ scrape_inning_all <- function(gids, db_name = "database") {
         obs <- docsToNodes(docs, "/") %>%
             nodesToList() %>%
             listsToObs(urls = URLs, url.map = FALSE)
-        names(obs) <- gsub("//top//", "//inning_side//", names(obs))
-        names(obs) <- gsub("//bottom//", "//inning_side//", names(obs))
-        p <- ifelse(str_detect(sessionInfo()$running, "macOS"), "html//body//", "")
-        obs <- add_key(obs, parent=paste0(p, "game//inning"), recycle="num", key.name="inning", quiet=TRUE)
-        obs <- add_key(obs, parent=paste0(p, "game//inning"), recycle="next", key.name="next_", quiet=TRUE)
-        obs <- add_key(obs, parent=paste0(p, "game//inning//inning_side//atbat"), recycle="num", quiet=TRUE)
+        obs <- XML2Obs(URLs, quiet = TRUE)
+        obs <- re_name(obs, equiv = c("game//inning//top//atbat//pitch", "game//inning//bottom//atbat//pitch"),
+                       diff.name = "inning_side", quiet = TRUE)
+        obs <- re_name(obs, equiv = c("game//inning//top//atbat//runner", "game//inning//bottom//atbat//runner"),
+                       diff.name = "inning_side", quiet = TRUE)
+        obs <- re_name(obs, equiv = c("game//inning//top//atbat//po", "game//inning//bottom//atbat//po"),
+                       diff.name = "inning_side", quiet = TRUE)
+        obs <- re_name(obs, equiv = c("game//inning//top//atbat", "game//inning//bottom//atbat"),
+                       diff.name = "inning_side", quiet = TRUE)
+        obs <- re_name(obs, equiv = c("game//inning//top//action", "game//inning//bottom//action"),
+                       diff.name = "inning_side", quiet = TRUE)
+        obs <- add_key(obs, parent = "game//inning", recycle = "num",
+                       key.name = "inning", quiet = TRUE)
+        obs <- add_key(obs, parent = "game//inning", recycle = "next",
+                       key.name = "next_", quiet = TRUE)
+        names(obs) <- sub("^game//inning//action$", "game//inning//atbat//action", names(obs))
+        obs <- add_key(obs, parent = "game//inning//atbat",
+                       recycle = "num", quiet = TRUE)
     })
     # no longer need the 'game' and 'game//inning' observations
     rm.idx <- str_detect(names(obs), "game$|inning$")
@@ -96,7 +108,7 @@ format.table <- function(dat, name) {
            po = nums <- c("inning", "num"),
            runner = nums <- c("id", "inning", "num"))
     #For some reason, records are sometimes duplicated, remove them!
-    dat <- dat %>% distinct()
+    dat <- unique(dat)
     numz <- nums[nums %in% names(dat)] #error handling (just in case one of the columns doesn't exist)
     for (i in numz) dat[, i] <- suppressWarnings(as.numeric(dat[, i]))
     if ("game" %in% name) {
