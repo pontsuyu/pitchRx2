@@ -4,7 +4,7 @@
 \alias{scrape_inning_all}
 \title{Scrape Major League Baseball's Gameday Data}
 \usage{
-scrape_inning_all(gids, db_name)
+scrape_inning_all(gids, db_name = "database")
 }
 \arguments{
 \item{db_name}{sqlite3 file name.}

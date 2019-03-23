@@ -4,14 +4,12 @@
 \alias{animateFX}
 \title{Animate PITCHf/x}
 \usage{
-animateFX(data, interval = 0.01, layers = facet_grid(~stand),
+animateFX(data, pitch_interval = 0.01, layers = facet_grid(~stand),
   color = "pitch_type", point.alpha = 1/3, x_lim = c(-3.5, 3.5),
   y_lim = c(0, 7), movie.name = "animation.gif", ...)
 }
 \arguments{
 \item{data}{data frame with appropriately named PITCHf/x variables}
-
-\item{interval}{time (in seconds) between plotting the pitch locations.}
 
 \item{layers}{list of ggplot2 layer modifications.}
 
@@ -26,6 +24,8 @@ animateFX(data, interval = 0.01, layers = facet_grid(~stand),
 \item{movie.name}{gif image name}
 
 \item{...}{using in saveGIF}
+
+\item{interval}{time (in seconds) between plotting the pitch locations.}
 }
 \value{
 Returns a series of objects of the class used by package ggplot2 to represent plots.
