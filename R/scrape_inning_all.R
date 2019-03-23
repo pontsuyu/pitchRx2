@@ -23,12 +23,12 @@
 #'
 scrape_inning_all <- function(gids, db_name = "database") {
     URLs <- paste0(makeUrls(gids), "/inning/inning_all.xml")
-    cores <- detectCores(logical=FALSE)
-    cluster <- makeCluster(cores)
+    cores <- parallel::detectCores(logical=FALSE)
+    cluster <- parallel::makeCluster(cores)
     registerDoParallel(cluster)
     obs <- foreach(i = 1:length(URLs), .combine = c, .packages = "XML2R") %dopar%
         XML2Obs(URLs[i], quiet = TRUE)
-    stopCluster(cluster)
+    parallel::stopCluster(cluster)
     suppressWarnings({
         obs <- re_name(obs, equiv = c("game//inning//top//atbat//pitch", "game//inning//bottom//atbat//pitch"),
                        diff.name = "inning_side", quiet = TRUE)
