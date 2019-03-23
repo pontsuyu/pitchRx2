@@ -12,8 +12,8 @@ get_snapshots <- function(data, interval = 0.01) {
   if (!all(idx %in% names(data)))
       stop("'data' must have the following variables in your dataset:
             'x0', 'y0', 'z0', 'vx0', 'vy0', 'vz0', 'ax', 'ay', 'az'")
+  data <- data[complete.cases(data[,idx]),]
   parameters <- data[,idx]
-  parameters <- parameters[complete.cases(parameters),]
   # Figure out how long it takes each pitch to reach home plate
   times <- with(parameters, (-vy0 - sqrt(vy0^2 - 2 * ay * (y0 - 1.417))) / ay)
   # Number of 'snapshots' required for EVERY pitch to reach home plate
