@@ -12,11 +12,15 @@ Depends: R (>= 3.5.0)
 Imports:
     dplyr,
     tidyr,
-    purrr,
+    stringr,
     lubridate,
     ggplot2,
     rvest,
+    foreach,
+    doParallel,
     DBI,
     xml2,
+    XML2R,
+    XML,
     animation
 RoxygenNote: 6.1.1
