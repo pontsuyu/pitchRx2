@@ -46,7 +46,7 @@ animateFX <- function(data, pitch_interval = 0.01, layers = facet_grid(~stand), 
         for(i in 1:N){
             frame <- data.frame(snapshots[,i,], other, stringsAsFactors = FALSE)
             colnames(frame) <- c("X", "Y", "Z", colnames(other))
-            frame$scale_y <- abs(frame$y - release) / max.dist
+            frame$scale_y <- abs(frame$Y - release) / max.dist
             p <- ggplot() +
                 geom_point(data = frame, aes_string("X", "Z", colour = color), alpha = point.alpha) +
                 geom_rect(data = boundaries,
