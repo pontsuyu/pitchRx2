@@ -26,30 +26,41 @@ scrape_inning_all <- function(gids, db_name = "database") {
     cores <- parallel::detectCores(logical=FALSE)
     cluster <- parallel::makeCluster(cores)
     registerDoParallel(cluster)
-    obs <- foreach(i = 1:length(URLs), .combine = c, .packages = "XML2R") %dopar%
-        XML2Obs(URLs[i], quiet = TRUE)
+    obs <- foreach(i = 1:length(URLs), .combine = c,
+                   .packages = c("XML2R", "dplyr", "purrr", "xml2")) %dopar% {
+                       tmp <- try(read_xml(URLs[i]) %>% xml_children())
+                       if(length(tmp)!=0){
+                           valid.urls <- sapply(tmp, function(x) attr(x, "XMLsource"))
+                           tmp %>%
+                               map(xmlParse) %>%
+                               map(xmlChildren) %>%
+                               nodesToList() %>%
+                               listsToObs(urls = valid.urls, append.value = TRUE, as.equiv = TRUE, url.map = FALSE) %>%
+                               map(function(x) cbind(x, url = URLs[i]))
+                       }
+                   }
     parallel::stopCluster(cluster)
     suppressWarnings({
-        obs <- re_name(obs, equiv = c("game//inning//top//atbat//pitch", "game//inning//bottom//atbat//pitch"),
+        obs <- re_name(obs, equiv = c("inning//top//atbat//pitch", "inning//bottom//atbat//pitch"),
                        diff.name = "inning_side", quiet = TRUE)
-        obs <- re_name(obs, equiv = c("game//inning//top//atbat//runner", "game//inning//bottom//atbat//runner"),
+        obs <- re_name(obs, equiv = c("inning//top//atbat//runner", "inning//bottom//atbat//runner"),
                        diff.name = "inning_side", quiet = TRUE)
-        obs <- re_name(obs, equiv = c("game//inning//top//atbat//po", "game//inning//bottom//atbat//po"),
+        obs <- re_name(obs, equiv = c("inning//top//atbat//po", "inning//bottom//atbat//po"),
                        diff.name = "inning_side", quiet = TRUE)
-        obs <- re_name(obs, equiv = c("game//inning//top//atbat", "game//inning//bottom//atbat"),
+        obs <- re_name(obs, equiv = c("inning//top//atbat", "inning//bottom//atbat"),
                        diff.name = "inning_side", quiet = TRUE)
-        obs <- re_name(obs, equiv = c("game//inning//top//action", "game//inning//bottom//action"),
+        obs <- re_name(obs, equiv = c("inning//top//action", "inning//bottom//action"),
                        diff.name = "inning_side", quiet = TRUE)
-        obs <- add_key(obs, parent = "game//inning", recycle = "num",
+        obs <- add_key(obs, parent = "inning", recycle = "num",
                        key.name = "inning", quiet = TRUE)
-        obs <- add_key(obs, parent = "game//inning", recycle = "next",
+        obs <- add_key(obs, parent = "inning", recycle = "next",
                        key.name = "next_", quiet = TRUE)
-        names(obs) <- sub("^game//inning//action$", "game//inning//atbat//action", names(obs))
-        obs <- add_key(obs, parent = "game//inning//atbat",
+        names(obs) <- sub("^inning//action$", "inning//atbat//action", names(obs))
+        obs <- add_key(obs, parent = "inning//atbat",
                        recycle = "num", quiet = TRUE)
     })
-    # no longer need the 'game' and 'game//inning' observations
-    rm.idx <- str_detect(names(obs), "game$|inning$")
+    # no longer need the 'game' and 'inning' observations
+    rm.idx <- str_detect(names(obs), "inning$")
     obs <- obs[!rm.idx]
     tables <- collapse_obs(obs)
 
