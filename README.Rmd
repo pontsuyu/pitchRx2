@@ -34,7 +34,7 @@ magick::image_write(im_resize, path = "pitchRx2_resize.png")
 
 - `get_gids`<br>
     指定した年のすべてのgame_idを取得する
-- `scrape_playeres`<br>
+- `scrape_players`<br>
     試合ごとの選手や審判などの情報をリストに格納する
 - `scrape_inning_all`<br>
     投球、打席結果、ランナー状況、牽制、選手交代のデータをsqlite3に格納する

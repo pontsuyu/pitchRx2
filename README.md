@@ -16,7 +16,7 @@
 パッケージに含まれる関数は以下の通りです。
 
   - `get_gids`<br> 指定した年のすべてのgame\_idを取得する
-  - `scrape_playeres`<br> 試合ごとの選手や審判などの情報をリストに格納する
+  - `scrape_players`<br> 試合ごとの選手や審判などの情報をリストに格納する
   - `scrape_inning_all`<br> 投球、打席結果、ランナー状況、牽制、選手交代のデータをsqlite3に格納する
   - `get_snapshots`<br>
     `scrape_inning_all`で得た投球結果から、リリースからホームベース通過までの軌道を計算し、3次元データとして返す
