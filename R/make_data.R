@@ -12,28 +12,27 @@
 #' @examples
 #' make_data("mlb2018.sqlite")
 #'
-make_data <- function(db_sqlite, player){
-    db <- src_sqlite(db_sqlite)
-    # id-name data
-    if(missing(player)){
-        player <- pitchRx2::players %>%
-            select(id, first, last) %>%
-            unite("name", first, last, sep = " ") %>%
-            distinct() %>%
-            mutate(tmp = row_number()) %>%
-            arrange(desc(tmp)) %>%
-            group_by(id) %>%
-            mutate(id_order = row_number()) %>%
-            filter(id_order == 1) %>%
-            select(-tmp, -id_order) %>%
-            ungroup() %>%
-            mutate(id = as.numeric(id))
+make_data <- function(db_sqlite, player) {
+  db <- src_sqlite(db_sqlite)
+  # id-name data
+  if (missing(player)) {
+    player <- pitchRx2::players %>%
+      select(id, first, last) %>%
+      unite("name", first, last, sep = " ") %>%
+      distinct() %>%
+      mutate(tmp = row_number()) %>%
+      arrange(desc(tmp)) %>%
+      group_by(id) %>%
+      mutate(id_order = row_number()) %>%
+      filter(id_order == 1) %>%
+      select(-tmp, -id_order) %>%
+      ungroup() %>%
+      mutate(id = as.numeric(id))
+  } else {
+    player <- players$player
+  }
 
-    } else {
-        player <- player
-    }
-
-    dat <- tbl(db, sql("SELECT
+  dat <- tbl(db, sql("SELECT
                   pitcher, -- 投手ID
                   p_throws, -- 投手の利き腕
                   batter, -- 打者ID
@@ -65,13 +64,11 @@ make_data <- function(db_sqlite, player){
                   AND atb.next_ = pit.next_ -- 次打者の有無
                   AND atb.num = pit.num -- イベント番号
                    ")) %>%
-        as.data.frame() %>%
-        left_join(player, by = c("pitcher" = "id")) %>%
-        rename(pitcher_name = name) %>%
-        left_join(player, by = c("batter" = "id")) %>%
-        rename(batter_name = name)
+    as.data.frame() %>%
+    left_join(player, by = c("pitcher" = "id")) %>%
+    rename(pitcher_name = name) %>%
+    left_join(player, by = c("batter" = "id")) %>%
+    rename(batter_name = name)
 
-    return(dat)
+  return(dat)
 }
-
-

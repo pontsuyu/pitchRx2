@@ -2,25 +2,24 @@
 % Please edit documentation in R/scrape_inning_all.R
 \name{scrape_inning_all}
 \alias{scrape_inning_all}
-\title{Scrape Major League Baseball's Gameday Data}
+\title{Scrape MLB Gameday Data}
 \usage{
 scrape_inning_all(gids, db_name = "database")
 }
 \arguments{
-\item{db_name}{sqlite3 file name.}
+\item{db_name}{generating sqlite3 file name.}
 
-\item{gid}{character vector of gameday_links.}
+\item{gid}{character vector. vector of gameday_links.}
 }
 \value{
 Nothing
 }
 \description{
-Function for obtaining PITCHf/x and other related Gameday Data. This function currently has support for files ending with:
-\href{http://gd2.mlb.com/components/game/mlb/year_2011/month_04/day_04/gid_2011_04_04_minmlb_nyamlb_1/inning/inning_all.xml}{inning/inning_all.xml}
+Function for obtaining PITCHf/x and other related Gameday Data.
+\href{http://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_04/gid_2019_04_04_wasmlb_nynmlb_1/inning/inning_all.xml}{inning/inning_all.xml}
 }
 \examples{
 data(game_ids, package = "pitchRx2")
 gid <- str_subset(game_ids, "^gid_2017_04_05_")
 scrape_inning_all(gid, "Gameday")
-
 }

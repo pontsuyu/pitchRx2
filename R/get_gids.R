@@ -1,6 +1,7 @@
 #' Get game_ids in specified years
 #'
 #' @import rvest
+#' @import stringr
 #' @importFrom dplyr %>%
 #' @importFrom purrr map
 #'

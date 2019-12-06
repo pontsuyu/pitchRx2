@@ -1,14 +1,14 @@
 Package: pitchRx2
 Type: Package
 Title: Scraping and visualizing pitchfx data
-Version: 0.2.0
+Version: 1.0.0
 Author: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
 Maintainer: Hiroyuki Tsuyuzaki <wu.pe.s2.47@gmail.com>
 Description: This package can easily obtain MLB pitchf/x data.
 License: MIT
 LazyData: true
 Encoding: UTF-8
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.6.0)
 Imports:
     dplyr,
     tidyr,
@@ -17,6 +17,7 @@ Imports:
     ggplot2,
     rvest,
     foreach,
+    parallel,
     doParallel,
     DBI,
     xml2,
