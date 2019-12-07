@@ -28,8 +28,6 @@ make_data <- function(db_sqlite, player) {
       select(-tmp, -id_order) %>%
       ungroup() %>%
       mutate(id = as.numeric(id))
-  } else {
-    player <- players$player
   }
 
   dat <- tbl(db, sql("SELECT
