@@ -121,8 +121,8 @@ format.table <- function(dat, name) {
     atbat = nums <- c("pitcher", "batter", "num", "b", "s", "o", "inning"),
     pitch = nums <- c(
       "id", "x", "y", "start_speed", "end_speed", "sz_top", "sz_bot", "pfx_x", "pfx_z", "px",
-      "pz", "x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az", "type_confidence",
-      "zone", "nasty", "spin_dir", "spin_rate", "inning", "num", "on_1b", "on_2b", "on_3b"
+      "pz", "x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az",
+      "inning", "num", "on_1b", "on_2b", "on_3b"
     ),
     po = nums <- c("inning", "num"),
     runner = nums <- c("id", "inning", "num")
