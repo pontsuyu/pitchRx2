@@ -100,7 +100,8 @@ scrape_inning_all <- function(gids, db_name = "database") {
   # make data-base file
   fn <- paste0(db_name, ".sqlite3")
   if (file.exists(fn)) file.remove(fn)
-  db <- src_sqlite(fn, create = T)
+  db <- DBI::dbConnect(RSQLite::SQLite(), dbname = fn)
+  # db <- src_sqlite(fn, create = T)
 
   for (i in names(tables)) {
     value <- tables[[i]]
@@ -111,7 +112,7 @@ scrape_inning_all <- function(gids, db_name = "database") {
   }
   invisible(db_drop_table(db$con, "sqlite_stat1"))
   invisible(db_drop_table(db$con, "sqlite_stat4"))
-  rm(db)
+  DBI::dbDisconnect(db)
 }
 
 # Take a matrix and turn into data frame and turn relevant columns into numerics
