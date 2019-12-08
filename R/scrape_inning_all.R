@@ -111,6 +111,7 @@ scrape_inning_all <- function(gids, db_name = "database") {
   }
   invisible(db_drop_table(db$con, "sqlite_stat1"))
   invisible(db_drop_table(db$con, "sqlite_stat4"))
+  DBI::dbDisconnect(db)
 }
 
 # Take a matrix and turn into data frame and turn relevant columns into numerics
@@ -121,7 +122,7 @@ format.table <- function(dat, name) {
     pitch = nums <- c(
       "id", "x", "y", "start_speed", "end_speed", "sz_top", "sz_bot", "pfx_x",
       "pfx_z", "px", "pz", "x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az",
-      # "nasty", "spin_dir", "spin_rate",
+      "nasty", "spin_dir", "spin_rate",
       "inning", "num", "on_1b", "on_2b", "on_3b"
     ),
     po = nums <- c("inning", "num"),
