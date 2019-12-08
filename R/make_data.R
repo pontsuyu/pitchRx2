@@ -16,7 +16,7 @@ make_data <- function(db_sqlite, player) {
   db <- src_sqlite(db_sqlite)
   # id-name data
   if (missing(player)) {
-    player <- pitchRx2::players %>%
+    player <- pitchRx2::players$player %>%
       select(id, first, last) %>%
       unite("name", first, last, sep = " ") %>%
       distinct() %>%
