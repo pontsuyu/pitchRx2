@@ -111,7 +111,7 @@ scrape_inning_all <- function(gids, db_name = "database") {
   }
   invisible(db_drop_table(db$con, "sqlite_stat1"))
   invisible(db_drop_table(db$con, "sqlite_stat4"))
-  DBI::dbDisconnect(db$con)
+  rm(db)
 }
 
 # Take a matrix and turn into data frame and turn relevant columns into numerics
@@ -131,7 +131,7 @@ format.table <- function(dat, name) {
   # For some reason, records are sometimes duplicated, remove them!
   dat <- unique(dat)
   numz <- nums[nums %in% names(dat)] # error handling (just in case one of the columns doesn't exist)
-  for (i in numz) dat[, i] <- as.numeric(dat[, i])
+  for (i in numz) dat[, i] <- suppressWarnings(as.numeric(dat[, i]))
   if (length(grep("^url$", names(dat)))) dat$gameday_link <- sub("/.*", "", sub(".*gid", "gid", dat$url))
   return(dat)
 }
