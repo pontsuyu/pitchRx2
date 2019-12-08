@@ -104,7 +104,6 @@ scrape_inning_all <- function(gids, db_name = "database") {
 
   for (i in names(tables)) {
     value <- tables[[i]]
-    # '.' in table names are not good!
     names(value) <- sub("\\.", "_", names(value))
     names(value) <- sub("^url_key$", "url", names(value))
     if ("url" %in% colnames(value)) value <- value[!is.na(value$url), ]
@@ -120,9 +119,9 @@ format.table <- function(dat, name) {
     action = nums <- c("b", "s", "o", "player", "pitch", "inning"),
     atbat = nums <- c("pitcher", "batter", "num", "b", "s", "o", "inning"),
     pitch = nums <- c(
-      "id", "x", "y", "start_speed", "end_speed", "sz_top", "sz_bot", "pfx_x", "pfx_z", "px",
-      "pz", "x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az",
-      "inning", "num", "on_1b", "on_2b", "on_3b"
+      "id", "x", "y", "start_speed", "end_speed", "sz_top", "sz_bot", "pfx_x",
+      "pfx_z", "px", "pz", "x0", "y0", "z0", "vx0", "vy0", "vz0", "ax", "ay", "az",
+      "nasty", "spin_dir", "spin_rate", "inning", "num", "on_1b", "on_2b", "on_3b"
     ),
     po = nums <- c("inning", "num"),
     runner = nums <- c("id", "inning", "num")
@@ -130,7 +129,7 @@ format.table <- function(dat, name) {
   # For some reason, records are sometimes duplicated, remove them!
   dat <- unique(dat)
   numz <- nums[nums %in% names(dat)] # error handling (just in case one of the columns doesn't exist)
-  for (i in numz) dat[, i] <- suppressWarnings(as.numeric(dat[, i]))
+  for (i in numz) dat[, i] <- as.numeric(dat[, i])
   if (length(grep("^url$", names(dat)))) dat$gameday_link <- sub("/.*", "", sub(".*gid", "gid", dat$url))
   return(dat)
 }
