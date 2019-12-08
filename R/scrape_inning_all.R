@@ -111,7 +111,7 @@ scrape_inning_all <- function(gids, db_name = "database") {
   }
   invisible(db_drop_table(db$con, "sqlite_stat1"))
   invisible(db_drop_table(db$con, "sqlite_stat4"))
-  DBI::dbDisconnect(db)
+  DBI::dbDisconnect(db$con)
 }
 
 # Take a matrix and turn into data frame and turn relevant columns into numerics
