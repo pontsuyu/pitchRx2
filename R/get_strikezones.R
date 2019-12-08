@@ -16,7 +16,7 @@ get_strikezones <- function(data, mean_strikezone = FALSE) {
     stop("'data' must have the following columns: 'b_height', 'stand', 'pz'")
   h <- data %>%
     select(stand, b_height) %>%
-    separate(b_height, c("x", "z"), sep = "' ") %>%
+    separate(b_height, c("x", "z"), sep = "-") %>%
     mutate(x = as.numeric(x),
            z = as.numeric(z)/12, # feet to inch
            heights = x + z) %>%
