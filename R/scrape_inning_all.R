@@ -101,7 +101,6 @@ scrape_inning_all <- function(gids, db_name = "database") {
   fn <- paste0(db_name, ".sqlite3")
   if (file.exists(fn)) file.remove(fn)
   db <- DBI::dbConnect(RSQLite::SQLite(), dbname = fn)
-  # db <- src_sqlite(fn, create = T)
 
   for (i in names(tables)) {
     value <- tables[[i]]
@@ -110,8 +109,8 @@ scrape_inning_all <- function(gids, db_name = "database") {
     if ("url" %in% colnames(value)) value <- value[!is.na(value$url), ]
     copy_to(db, value, name = i, temporary = FALSE)
   }
-  invisible(db_drop_table(db$con, "sqlite_stat1"))
-  invisible(db_drop_table(db$con, "sqlite_stat4"))
+  invisible(db_drop_table(db, "sqlite_stat1"))
+  invisible(db_drop_table(db, "sqlite_stat4"))
   DBI::dbDisconnect(db)
 }
 
