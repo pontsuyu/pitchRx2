@@ -47,6 +47,7 @@ make_data <- function(db_sqlite, player) {
                   b_height, -- バッターの身長(feet-inch)
                   break_angle, -- 変化角
                   break_length, -- 変化量
+                  zone, -- ゾーン
                   pit.num as event_num, -- 試合ごとのイベント番号
                   pit.des, -- 投球結果
                   type,  -- 簡易投球結果
