@@ -52,7 +52,8 @@ make_data <- function(db_sqlite, player) {
                   pit.des, -- 投球結果
                   type,  -- 簡易投球結果
                   event, -- 打席結果
-                  atb.date -- 日時
+                  atb.date, -- 日時
+                  pit.url -- URL
                   FROM
                   atbat atb, -- 打席テーブル
                   pitch pit -- 投球データテーブル
